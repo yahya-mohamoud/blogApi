@@ -2,17 +2,28 @@ import express from "express";
 import dotenv from "dotenv";
 import postsRoute from "./src/routes/postsRoute.mjs";
 import commentsRouter from "./src/routes/commentsRoute.mjs";
+import auth from "./src/routes/authRouter.mjs";
+import authMiddleware from "./middleware.mjs";
+import cors from "cors"
 dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3000
 
-app.use(express.urlencoded({extended: true}))
+const corsOptions = {
+    origin: "localhost:5173",
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}
+app.use(cors(corsOptions))
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 app.get('/api', (req, res) => {
-    res.json( "hello blog API")
+    res.json("hello blog API")
 })
-app.use('/api/posts', postsRoute)
-app.use('/api/comments', commentsRouter)
+app.use('/api/auth', auth)
+
+app.use('/api/posts', authMiddleware, postsRoute)
+app.use('/api/comments', authMiddleware, commentsRouter)
 app.listen(PORT, console.log(`app started on port: ${PORT}`))
