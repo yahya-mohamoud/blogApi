@@ -57,8 +57,7 @@ const updatePost = async (req, res) => {
                 content: updatedData
             }
         })
-        console.log(updatePost)
-        res.redirect('/api/posts')
+        res.json(updatePost)
     } catch (error) {
         res.status(404).json("error: Post not found")
     }
@@ -68,10 +67,13 @@ const deletePost = async (req, res) => {
     const id = parseInt(req.params.id)
     console.log(id)
     try {
-        await prisma.post.delete({
-            where: { id }
+        const posts = await prisma.post.delete({
+            where: { id },
+            include: {
+                comments: true
+            }
         })
-        res.redirect('/api/posts')
+        res.json(posts)
     } catch (error) {
         res.status(404).json("error: post not found")
     }
