@@ -6,13 +6,11 @@ const getAllPosts = async (req, res) => {
             comments: true
         }
     })
-    console.log(posts)
     res.json(posts)
 }
 
 const getSinglePost = async (req, res) => {
     const id = parseInt(req.params.id)
-    console.log(id)
     const post = await prisma.post.findFirst({
         where: { id },
         include: {
@@ -21,17 +19,18 @@ const getSinglePost = async (req, res) => {
             }
         }
     })
-    res.json({ post })
+    res.json( post )
 }
 
 const createPost = async (req, res) => {
-    const { title, content } = req.body;
-    console.log(title, content)
+    const { title, content, imageUrl } = req.body;
+    console.log(title, content, imageUrl)
     try {
         const post = await prisma.post.create({
             data: {
                 title,
-                content
+                content,
+                imageUrl
             }
         })
         res.json(post)

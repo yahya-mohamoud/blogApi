@@ -18,14 +18,14 @@ auth.post('/login', async (req, res) => {
         where: { email }
     })
 
-    if(!user) res.status(404).json('user not found')
+    if(!user) res.status(404).json({message: `user with ${email} wasn't found`})
 
     const ismatch = await bcrypt.compare(password, user.password)
 
-    if (!ismatch)  res.status(401).json("invalid credentials")
+    if (!ismatch)  res.status(401).json({message: "invalid credentials"})
     
 
-    const token = jwt.sign({id: user.id, email: user.email, username: user.username}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" })
+    const token = jwt.sign({id: user.id, email: user.email, username: user.username}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "20m" })
 
     res.json({
         message: "login successful",
@@ -37,10 +37,11 @@ auth.post('/signup', async (req, res) => {
     {
         const { username, email, password, confirm } = req.body;
 
-        if (password !== confirm) res.status(500).json('passwords must be the same')
-
+        if (password !== confirm) {
+            res.status(401).json({message: "passwords must be the same"})
+            return
+        }
         const hashed = await bcrypt.hash(password, 10)
-        console.log(hashed)
         const user = await prisma.user.create({
             data: {
                 username,

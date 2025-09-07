@@ -26,6 +26,7 @@ model Post {
   id         Int       @id @default(autoincrement())
   title      String
   content    String
+  imageUrl   String?  
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   author     User?     @relation(fields: [authorId], references: [id], onDelete: Cascade)

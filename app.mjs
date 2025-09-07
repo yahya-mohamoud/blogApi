@@ -5,6 +5,7 @@ import commentsRouter from "./src/routes/commentsRoute.mjs";
 import auth from "./src/routes/authRouter.mjs";
 import authMiddleware from "./middleware.mjs";
 import cors from "cors"
+import postControllers from "./src/controllers/postControllers.mjs";
 dotenv.config()
 
 const app = express()
@@ -22,6 +23,9 @@ app.use(express.json())
 app.get('/api', (req, res) => {
     res.json("hello blog API")
 })
+app.get('/api/posts', postControllers.getAllPosts)
+app.get('/api/posts/:id', postControllers.getSinglePost)
+
 app.use('/api/auth', auth)
 
 app.use('/api/posts', authMiddleware, postsRoute)
