@@ -25,16 +25,22 @@ const getSinglePost = async (req, res) => {
 const createPost = async (req, res) => {
     const { title, content, imageUrl } = req.body;
     console.log(title, content, imageUrl)
+    const id = req.user.id
+    console.log(id)
     try {
         const post = await prisma.post.create({
             data: {
                 title,
                 content,
-                imageUrl
+                imageUrl,
+                author: {
+                    connect:  { id}
+                }
             }
         })
         res.json(post)
     } catch (error) {
+        console.log(error)
         res.status(404).json("error: can not create a post")
     }
 }

@@ -5,6 +5,7 @@ const postsRoute = Router()
 
 postsRoute.post('/', postControllers.createPost)
 
+
 // postsRoute.get('/:id', postControllers.getSinglePost)
 
 postsRoute.patch('/:id', postControllers.updatePost)

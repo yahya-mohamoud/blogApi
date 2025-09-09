@@ -14,19 +14,20 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   username   String
   email      String
   password   String
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
   posts      Post[]
+  Comment    Comment[]
 }
 
 model Post {
   id         Int       @id @default(autoincrement())
   title      String
   content    String
-  imageUrl   String?  
+  imageUrl   String?
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   author     User?     @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -39,6 +40,8 @@ model Comment {
   content    String
   post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId     Int
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId   Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

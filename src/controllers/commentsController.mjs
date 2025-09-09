@@ -10,7 +10,7 @@ const getAllComments = async (req, res) => {
     }
 }
 
-const getSingleComment =  async (req, res) => {
+const getSingleComment = async (req, res) => {
     const id = parseInt(req.params.id);
     try {
         const comment = await prisma.comment.findUnique({
@@ -23,24 +23,32 @@ const getSingleComment =  async (req, res) => {
 }
 
 const createComment = async (req, res) => {
-    const { content } = req.body;
-    const postId = parseInt(req.body.postId);
-    console.log(content, postId)
-    try {
-        const comment = await prisma.comment.create({
-            data: {
-                content,
-                postId
-            }
-        })
-        console.log(comment)
-        res.status(201).json(comment);
-    } catch (error) {
-        res.status(500).json("error: unable to create a comment", error)
-    }
-}
+  const { content, postId } = req.body;
+  const authorId = req.user.id
+  const Id = parseInt(postId);
 
-const updateComment =  async (req, res) => {
+  if (!Id) return res.status(400).json({ message: "postId is required" });
+
+  const post = await prisma.post.findUnique({ where: { id: Id } });
+  if (!post) return res.status(404).json({ message: "Post not found" });
+
+  try {
+    const comment = await prisma.comment.create({
+      data: {
+        content,
+        post: { connect: { id: Id } },
+        author: {connect: {id: authorId}}
+      }
+    });
+
+    res.status(201).json(comment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const updateComment = async (req, res) => {
     const id = parseInt(req.params.id)
     const { content } = req.body
     try {
@@ -56,7 +64,7 @@ const updateComment =  async (req, res) => {
     }
 }
 
-const deleteComment =  async (req, res) => {
+const deleteComment = async (req, res) => {
     const id = parseInt(req.params.id)
     console.log(id)
     try {
@@ -70,4 +78,4 @@ const deleteComment =  async (req, res) => {
 }
 
 
-export default {getAllComments, getSingleComment, updateComment, createComment, deleteComment}
+export default { getAllComments, getSingleComment, updateComment, createComment, deleteComment }
