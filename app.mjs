@@ -24,6 +24,8 @@ app.get('/api', (req, res) => {
     res.json("hello blog API")
 })
 app.get('/api/posts', postControllers.getAllPosts)
+app.get('/api/posts/published', postControllers.getPublishedPosts)
+app.get('/api/posts/drafts', postControllers.getDrafts)
 app.get('/api/posts/:id', postControllers.getSinglePost)
 
 app.use('/api/auth', auth)

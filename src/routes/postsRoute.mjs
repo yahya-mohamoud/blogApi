@@ -5,6 +5,7 @@ const postsRoute = Router()
 
 postsRoute.post('/', postControllers.createPost)
 
+postsRoute.get('/draft', postControllers.getDrafts)
 
 // postsRoute.get('/:id', postControllers.getSinglePost)
 

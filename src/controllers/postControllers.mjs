@@ -3,7 +3,22 @@ import prisma from "../../prisma.mjs"
 const getAllPosts = async (req, res) => {
     const posts = await prisma.post.findMany({
         include: {
-            comments: true
+            comments:{
+                include: { author: true}
+            },
+        }
+    })
+    res.json(posts)
+}
+const getPublishedPosts = async (req, res) => {
+    const posts = await prisma.post.findMany({
+        where: {
+            published: true
+        },
+        include: {
+            comments:{
+                include: { author: true}
+            },
         }
     })
     res.json(posts)
@@ -14,25 +29,27 @@ const getSinglePost = async (req, res) => {
     const post = await prisma.post.findFirst({
         where: { id },
         include: {
+            author: true,
             comments: {
-                where: {postId: id}
-            }
+                where: {postId: id},
+                include: {author: true}
+            },
         }
     })
     res.json( post )
 }
 
 const createPost = async (req, res) => {
-    const { title, content, imageUrl } = req.body;
-    console.log(title, content, imageUrl)
+    const { title, content, imageUrl, published } = req.body;
+    console.log(title, content, imageUrl, published)
     const id = req.user.id
-    console.log(id)
     try {
         const post = await prisma.post.create({
             data: {
                 title,
                 content,
                 imageUrl,
+                published,
                 author: {
                     connect:  { id}
                 }
@@ -84,4 +101,23 @@ const deletePost = async (req, res) => {
     }
 }
 
-export default { getAllPosts, getSinglePost, updatePost, deletePost, createPost }
+const getDrafts = async (req, res) => {
+    const drafts = await prisma.post.findMany({ 
+        where: {
+            published: false
+        }, include: {
+            comments: {
+                include: {author: true}
+            }
+        }
+    })
+
+        if(!drafts) {
+            res.json({message:"There is no unpublished posts"})
+        }
+
+        res.json(drafts)
+    
+}
+
+export default { getAllPosts, getSinglePost, updatePost, deletePost, createPost, getDrafts, getPublishedPosts }

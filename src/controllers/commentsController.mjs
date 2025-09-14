@@ -3,6 +3,9 @@ import prisma from "../../prisma.mjs";
 const getAllComments = async (req, res) => {
     try {
         const comments = await prisma.comment.findMany({
+            include: {
+                author: true
+            }
         })
         res.json(comments)
     } catch (error) {
@@ -23,29 +26,29 @@ const getSingleComment = async (req, res) => {
 }
 
 const createComment = async (req, res) => {
-  const { content, postId } = req.body;
-  const authorId = req.user.id
-  const Id = parseInt(postId);
+    const { content, postId } = req.body;
+    const authorId = req.user.id
+    const Id = parseInt(postId);
 
-  if (!Id) return res.status(400).json({ message: "postId is required" });
+    if (!Id) return res.status(400).json({ message: "postId is required" });
 
-  const post = await prisma.post.findUnique({ where: { id: Id } });
-  if (!post) return res.status(404).json({ message: "Post not found" });
+    const post = await prisma.post.findUnique({ where: { id: Id } });
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
-  try {
-    const comment = await prisma.comment.create({
-      data: {
-        content,
-        post: { connect: { id: Id } },
-        author: {connect: {id: authorId}}
-      }
-    });
+    try {
+        const comment = await prisma.comment.create({
+            data: {
+                content,
+                post: { connect: { id: Id } },
+                author: { connect: { id: authorId } }
+            }
+        });
 
-    res.status(201).json(comment);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
-  }
+        res.status(201).json(comment);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
 };
 
 const updateComment = async (req, res) => {
@@ -65,15 +68,26 @@ const updateComment = async (req, res) => {
 }
 
 const deleteComment = async (req, res) => {
-    const id = parseInt(req.params.id)
-    console.log(id)
     try {
-        await prisma.comment.delete({
-            where: { id },
+        const commentId = parseInt(req.params.id)
+        const authorId = parseInt(req.user.id)
+        const comment = await prisma.comment.findFirst({
+             where: {id: commentId}
+            })
+        if(!comment) {
+            return res.status(404).json({message: "comment not found"})
+        }
+
+        if(comment.authorId !== authorId) {
+            return res.status(403).json({message: "not allowed to delete this comment"})
+        }
+
+        const dlt = await prisma.comment.delete({
+            where: {id: commentId}
         })
-        res.redirect('/api/comments')
+            console.log(dlt)
     } catch (error) {
-        res.status(500).json("error: couldn't find the comment", error)
+        
     }
 }
 

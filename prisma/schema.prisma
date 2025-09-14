@@ -30,10 +30,13 @@ model Post {
   imageUrl   String?
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
+  published Boolean @default(false)
   author     User?     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId   Int?
   comments   Comment[]
 }
+
+// model 
 
 model Comment {
   id         Int      @id @default(autoincrement())
