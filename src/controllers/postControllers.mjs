@@ -41,7 +41,6 @@ const getSinglePost = async (req, res) => {
 
 const createPost = async (req, res) => {
     const { title, content, imageUrl, published } = req.body;
-    console.log(title, content, imageUrl, published)
     const id = req.user.id
     try {
         const post = await prisma.post.create({
@@ -65,7 +64,7 @@ const createPost = async (req, res) => {
 const updatePost = async (req, res) => {
     const id = parseInt(req.params.id);
     const { title, content } = req.body;
-    console.log(title, content)
+    
     try {
         const updatedData = {};
 
@@ -87,7 +86,6 @@ const updatePost = async (req, res) => {
 
 const deletePost = async (req, res) => {
     const id = parseInt(req.params.id)
-    console.log(id)
     try {
         const posts = await prisma.post.delete({
             where: { id },
@@ -116,8 +114,49 @@ const getDrafts = async (req, res) => {
             res.json({message:"There is no unpublished posts"})
         }
 
-        res.json(drafts)
-    
+        res.json(drafts)    
 }
 
-export default { getAllPosts, getSinglePost, updatePost, deletePost, createPost, getDrafts, getPublishedPosts }
+const unpublishPost = async (req, res) => {
+    const id = parseInt(req.body.id);
+    try {
+        const unpublishedPost = await prisma.post.update({
+            where: { id },
+            data: {
+                published: false
+            }
+        })
+        res.json(unpublishedPost)
+    } catch (error) {
+        console.log(error)
+        res.json({message: "something went wrong"})
+    }
+}
+
+const publishPost = async (req, res) => {
+    const id = parseInt(req.body.id);
+    try {
+        const publishedPost = await prisma.post.update({
+            where: { id },
+            data: {
+                published: true
+            }
+        })
+        res.json(publishedPost)
+    } catch (error) {
+        console.log(error)
+        res.json({message: "something went wrong"})
+    }
+}
+
+export default { 
+                getAllPosts, 
+                getSinglePost, 
+                updatePost, 
+                deletePost, 
+                createPost, 
+                getDrafts, 
+                getPublishedPosts,
+                unpublishPost,
+                publishPost
+            }

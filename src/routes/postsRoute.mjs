@@ -9,6 +9,9 @@ postsRoute.get('/draft', postControllers.getDrafts)
 
 // postsRoute.get('/:id', postControllers.getSinglePost)
 
+postsRoute.patch('/unpublish', postControllers.unpublishPost)
+postsRoute.patch('/publish', postControllers.publishPost)
+
 postsRoute.patch('/:id', postControllers.updatePost)
 
 postsRoute.delete('/:id', postControllers.deletePost)

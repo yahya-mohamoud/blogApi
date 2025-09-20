@@ -44,7 +44,7 @@ const createComment = async (req, res) => {
             }
         });
 
-        res.status(201).json(comment);
+        res.status(201).json({message:"Commented successfully"});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
@@ -85,7 +85,7 @@ const deleteComment = async (req, res) => {
         const dlt = await prisma.comment.delete({
             where: {id: commentId}
         })
-            console.log(dlt)
+            res.json({messages: "Comment deleted successfully"})
     } catch (error) {
         
     }
