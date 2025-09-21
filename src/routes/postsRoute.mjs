@@ -7,11 +7,12 @@ postsRoute.post('/', postControllers.createPost)
 
 postsRoute.get('/draft', postControllers.getDrafts)
 
-// postsRoute.get('/:id', postControllers.getSinglePost)
 
 postsRoute.patch('/unpublish', postControllers.unpublishPost)
 postsRoute.patch('/publish', postControllers.publishPost)
-
+postsRoute.get('/published', postControllers.getPublishedPosts)
+postsRoute.get('/drafts', postControllers.getDrafts)
+postsRoute.get('/:id', postControllers.getSinglePost)
 postsRoute.patch('/:id', postControllers.updatePost)
 
 postsRoute.delete('/:id', postControllers.deletePost)

@@ -26,6 +26,7 @@ const getPublishedPosts = async (req, res) => {
 
 const getSinglePost = async (req, res) => {
     const id = parseInt(req.params.id)
+    console.log("id: ", req.params.id)
     const post = await prisma.post.findFirst({
         where: { id },
         include: {
@@ -93,6 +94,7 @@ const deletePost = async (req, res) => {
                 comments: true
             }
         })
+        console.log(posts)
         res.json(posts)
     } catch (error) {
         res.status(404).json("error: post not found")
