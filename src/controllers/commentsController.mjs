@@ -53,7 +53,7 @@ const createComment = async (req, res) => {
 
 const updateComment = async (req, res) => {
     const id = parseInt(req.params.id)
-    const { content } = req.body
+    const {content} = req.body
     try {
         const comment = await prisma.comment.update({
             where: { id },
@@ -61,9 +61,9 @@ const updateComment = async (req, res) => {
                 content
             }
         })
-        res.json(comment)
+        res.json({message: "Comment updated successfully"})
     } catch (error) {
-        res.status(500).json("error: couldn't find the comment", error)
+        res.status(500).json({message: "couldn't find the comment"})
     }
 }
 

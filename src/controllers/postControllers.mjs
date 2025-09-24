@@ -26,7 +26,7 @@ const getPublishedPosts = async (req, res) => {
 
 const getSinglePost = async (req, res) => {
     const id = parseInt(req.params.id)
-    console.log("id: ", req.params.id)
+    console.log(id)
     const post = await prisma.post.findFirst({
         where: { id },
         include: {
@@ -64,19 +64,16 @@ const createPost = async (req, res) => {
 
 const updatePost = async (req, res) => {
     const id = parseInt(req.params.id);
-    const { title, content } = req.body;
+    const { title, content, published, imageUrl } = req.body;
     
     try {
-        const updatedData = {};
-
-        if (title !== undefined) updatedData.title = title;
-        if (content !== undefined) updatedData.content = content;
-
         const updatePost = await prisma.post.update({
             where: { id },
             data: {
                 title: title,
-                content: updatedData
+                content: content,
+                imageUrl,
+                published
             }
         })
         res.json(updatePost)

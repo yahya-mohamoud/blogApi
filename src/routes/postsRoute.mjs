@@ -14,6 +14,7 @@ postsRoute.get('/published', postControllers.getPublishedPosts)
 postsRoute.get('/drafts', postControllers.getDrafts)
 postsRoute.get('/:id', postControllers.getSinglePost)
 postsRoute.patch('/:id', postControllers.updatePost)
+postsRoute.patch('/:id', postControllers.updatePost)
 
 postsRoute.delete('/:id', postControllers.deletePost)
 
