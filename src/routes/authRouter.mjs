@@ -14,6 +14,7 @@ auth.get('/', (req, res) => {
 
 auth.post('/login', async (req, res) => {
     const { email, password } = req.body
+    
     const user = await prisma.user.findFirst({
         where: { email }
     })
@@ -25,7 +26,7 @@ auth.post('/login', async (req, res) => {
     if (!ismatch)  res.status(401).json({message: "invalid credentials"})
     
 
-    const token = jwt.sign({id: user.id, email: user.email, username: user.username}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "40m" })
+    const token = jwt.sign({id: user.id, email: user.email, username: user.username}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" })
 
     res.json({
         message: "login successful",

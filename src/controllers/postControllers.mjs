@@ -26,7 +26,6 @@ const getPublishedPosts = async (req, res) => {
 
 const getSinglePost = async (req, res) => {
     const id = parseInt(req.params.id)
-    console.log(id)
     const post = await prisma.post.findFirst({
         where: { id },
         include: {
