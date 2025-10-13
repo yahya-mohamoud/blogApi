@@ -14,19 +14,19 @@ auth.get('/', (req, res) => {
 
 auth.post('/login', async (req, res) => {
     const { email, password } = req.body
-    
+
     const user = await prisma.user.findFirst({
         where: { email }
     })
 
-    if(!user) res.status(404).json({message: `user with ${email} wasn't found`})
+    if (!user) res.status(404).json({ message: `user with ${email} wasn't found` })
 
     const ismatch = await bcrypt.compare(password, user.password)
 
-    if (!ismatch)  res.status(401).json({message: "invalid credentials"})
-    
+    if (!ismatch) res.status(401).json({ message: "invalid credentials" })
 
-    const token = jwt.sign({id: user.id, email: user.email, username: user.username}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" })
+
+    const token = jwt.sign({ id: user.id, email: user.email, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" })
 
     res.json({
         message: "login successful",
@@ -39,7 +39,7 @@ auth.post('/signup', async (req, res) => {
         const { username, email, password, confirm } = req.body;
 
         if (password !== confirm) {
-            res.status(401).json({message: "passwords must be the same"})
+            res.status(401).json({ message: "passwords must be the same" })
             return
         }
         const hashed = await bcrypt.hash(password, 10)
@@ -52,6 +52,60 @@ auth.post('/signup', async (req, res) => {
         })
         res.json({ user })
     }
+})
+
+auth.post("/confirm", async(req, res) => {
+    const {email} = req.body;
+    
+    const userEmail = await prisma.user.findFirst({
+        where: { email }
+    })
+
+    if(!userEmail) {
+        res.status(404).json({message: "unknown email, please try again", result: 0})
+    } else {
+        res.json({email, result: 1})
+        
+    }
+
+})
+
+auth.post("/reset", async (req, res) => {
+    const {username, password, confirm} = req.body;
+
+    if(password !== confirm) {
+        res.status(401).json({message: "Passwords do not match"})
+    }
+    const user = await prisma.user.findFirst({
+        where: { username}
+    })
+
+    if(!user) {
+        res.status(402).json({message: "user not found!!!!"})
+    }
+
+    const hash = await bcrypt.hash(password, 10)
+    console.log(hash)
+    await prisma.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            email: user.email,
+            
+            password: hash
+        }
+    })
+
+    res.json("user exists")
+
+
+})
+
+auth.get("/update/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    console.log("user", req.user)
+    console.log(email)
 })
 
 export default auth
