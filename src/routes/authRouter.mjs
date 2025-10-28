@@ -70,42 +70,48 @@ auth.post("/confirm", async(req, res) => {
 
 })
 
-auth.post("/reset", async (req, res) => {
-    const {username, password, confirm} = req.body;
+// auth.post("/reset", async (req, res) => {
+//     const {username, password, confirm} = req.body;
 
-    if(password !== confirm) {
-        res.status(401).json({message: "Passwords do not match"})
-    }
-    const user = await prisma.user.findFirst({
-        where: { username}
-    })
+//     if(password !== confirm) {
+//         res.status(401).json({message: "Passwords do not match"})
+//     }
+//     const user = await prisma.user.findFirst({
+//         where: { username}
+//     })
 
-    if(!user) {
-        res.status(402).json({message: "user not found!!!!"})
-    }
+//     if(!user) {
+//         res.status(402).json({message: "user not found!!!!"})
+//     }
 
-    const hash = await bcrypt.hash(password, 10)
-    console.log(hash)
-    await prisma.user.update({
-        where: {
-            id: user.id
-        },
-        data: {
-            email: user.email,
+//     const hash = await bcrypt.hash(password, 10)
+//     console.log(hash)
+//     await prisma.user.update({
+//         where: {
+//             id: user.id
+//         },
+//         data: {
+//             email: user.email,
             
-            password: hash
-        }
-    })
+//             password: hash
+//         }
+//     })
 
-    res.json("user exists")
+//     res.json("user exists")
 
 
-})
+// })
 
 auth.get("/update/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     console.log("user", req.user)
     console.log(email)
+})
+
+auth.post('/reset', (req, res) => {
+    const {id, abdi} = req.body;
+    console.log(id, abdi)
+    res.json({id, abdi})
 })
 
 export default auth

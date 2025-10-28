@@ -36,7 +36,7 @@ const getSinglePost = async (req, res) => {
             },
         }
     })
-    res.json( {post} )
+    res.json(post)
 }
 
 const createPost = async (req, res) => {

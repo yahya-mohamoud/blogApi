@@ -6,7 +6,7 @@ function authMiddleware(req, res, next) {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) {
             console.log(err)
-            return res.sendStatus(403)
+            return res.sendStatus(403).json({message: "token malformed"})
         }
         req.user = user
         next()
