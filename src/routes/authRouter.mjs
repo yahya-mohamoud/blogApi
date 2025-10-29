@@ -27,10 +27,25 @@ auth.post('/login', async (req, res) => {
 
 
     const token = jwt.sign({ id: user.id, email: user.email, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" })
+    const refreshToken = jwt.sign({user: user.name}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1d'})
+    
+    const userToken = await prisma.user.update({
+        where: {id: user.id},
+        data: {
+            refreshToken: refreshToken
+        }
+    })
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_eNV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
 
     res.json({
         message: "login successful",
-        token
+        token,
     })
 })
 
@@ -101,6 +116,21 @@ auth.post("/confirm", async(req, res) => {
 
 
 // })
+
+auth.post('/refresh', (req, res) => {
+
+})
+
+
+
+
+
+
+
+
+
+
+
 
 auth.get("/update/:id", async (req, res) => {
     const id = parseInt(req.params.id);

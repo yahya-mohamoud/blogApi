@@ -21,6 +21,7 @@ model User {
   created_at DateTime  @default(now())
   posts      Post[]
   Comment    Comment[]
+  refreshToken String?
 }
 
 model Post {
