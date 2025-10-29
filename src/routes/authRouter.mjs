@@ -4,7 +4,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import prisma from "../../prisma.mjs";
 import jwt from "jsonwebtoken"
-
+import { generateAccessToken, generateRefreshToken} from '../utils/jwt.js'
 
 const auth = Router()
 
@@ -26,9 +26,8 @@ auth.post('/login', async (req, res) => {
     if (!ismatch) res.status(401).json({ message: "invalid credentials" })
 
 
-    const token = jwt.sign({ id: user.id, email: user.email, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" })
-    const refreshToken = jwt.sign({user: user.name}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1d'})
-    
+    const token = generateAccessToken(user.id, user.username, user.email)
+    const refreshToken = generateRefreshToken(user.id)
     const userToken = await prisma.user.update({
         where: {id: user.id},
         data: {
@@ -117,10 +116,56 @@ auth.post("/confirm", async(req, res) => {
 
 // })
 
-auth.post('/refresh', (req, res) => {
+auth.post('/refresh', async(req, res) => {
+    const token = req.cookies.refreshToken;
+    
+    if(!token) return res.status(401).json({message: 'No token provided'})
+    
+    try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
+        const user = await prisma.user.findUnique({
+            where: {id: decoded.id}
+        })
+
+        if(!user || user.refreshToken !== token) {
+            return res.status(403).json({message: "invalid refresh token"});
+        }
+
+        const newRefreshToken = generateRefreshToken(user.id)
+        await prisma.user.update({
+            where: {id: user.id},
+            data: {refreshToken: newRefreshToken}
+        })
+
+        const newAccessToken = generateAccessToken(user.id, user.username, user.email)
+
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            sameSite: 'strict',
+            path: '/refresh',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+
+        res.json({accessToken: newAccessToken})
+    } catch (error) {
+        return res.status(403).json({message: "invalid or expired refresh token"})
+    }
 })
 
+
+auth.post('/logout', async (req, res) => {
+    const token = req.cookies.refreshToken;
+    if(!token) return res.sendStatus(204);
+
+    await prisma.user.updateMany({
+        where: { refreshToken: token},
+        data: {refreshToken: null}
+    })
+
+    res.clearCookie('refreshToken', {path: '/refresh'});
+    res.sendStatus(200)
+})
 
 
 

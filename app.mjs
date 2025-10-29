@@ -7,6 +7,7 @@ import authMiddleware from "./middleware.mjs";
 import cors from "cors"
 import postControllers from "./src/controllers/postControllers.mjs";
 import userRoute from "./src/routes/usersRoute.mjs";
+import cookieParser from "cookie-parser";
 dotenv.config()
 
 const app = express()
@@ -20,6 +21,7 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(cookieParser())
 
 app.get('/api', (req, res) => {
     console.log("from app.mjs: ", req.user)
