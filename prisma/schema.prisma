@@ -14,30 +14,29 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  username   String
-  email      String
-  password   String
-  created_at DateTime  @default(now())
-  posts      Post[]
-  Comment    Comment[]
-  refreshToken String?
+  id           Int       @id @default(autoincrement())
+  username     String @unique
+  email        String @unique
+  password     String
+  created_at   DateTime  @default(now())
+  roles        Role      @default(USER)
+  posts        Post[]
+  Comment      Comment[]
 }
 
 model Post {
-  id         Int       @id @default(autoincrement())
-  title      String
-  content    String
-  imageUrl   String?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  published Boolean @default(false)
-  author     User?     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId   Int?
-  comments   Comment[]
+  id              Int               @id @default(autoincrement())
+  title           String
+  content         String
+  imageUrl        String?
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  published       Boolean           @default(false)
+  author          User?             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        Int?
+  comments        Comment[]
+  Post_Categories Post_Categories[]
 }
-
-// model 
 
 model Comment {
   id         Int      @id @default(autoincrement())
@@ -48,4 +47,24 @@ model Comment {
   authorId   Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+model Category {
+  id              Int               @id @default(autoincrement())
+  categoryName    String
+  Post_Categories Post_Categories[]
+}
+
+model Post_Categories {
+  id         Int      @id @default(autoincrement())
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     Int
+  categories Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
 }
