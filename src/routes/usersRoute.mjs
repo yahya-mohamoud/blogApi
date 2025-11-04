@@ -13,15 +13,17 @@ userRoute.get('/allusers', async (req, res) => {
             include: {
                 posts: {
                     include: {
-                        comments: true
+                        comments: true,
                     }
-                }
+                },
+                Comment: true
             }
         })
 
         res.json(users)
     } catch (error) {
-        res.status("404").json(`error: ${error}`)
+        console.log(error)
+        res.status(500).json(`error: ${error}`)
     }
 
 })

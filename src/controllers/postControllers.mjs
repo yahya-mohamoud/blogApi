@@ -58,12 +58,44 @@ const createCategories = async (req, res) => {
 
     res.json(data)
 }
+
+const getAllCategories = async (req, res) => {
+    const categories = await prisma.category.findMany({
+        include: {
+            Post_Categories: {
+                include: {
+                    categories: true
+                }
+            }
+        }
+    })
+
+    res.json(categories)
+}
+
+const getSingleCategory = async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const category = await prisma.post_Categories.findMany({
+        where: { categoryId: id },
+        include: {
+            post: {
+                include: {
+                    author: true
+                },
+            },
+            categories: true
+        },
+    })
+    console.log(category)
+    res.json(category)
+}
+
 const createPost = async (req, res) => {
     const { title, content, imageUrl, categoryName } = req.body; // send the category ID
     const id = req.user.id;
     const published = req.body.published === "True";
     const categoryId = parseInt(req.body.categoryId)
-
     try {
 
         const categories = await prisma.category.findFirst({
@@ -199,5 +231,7 @@ export default {
     getPublishedPosts,
     unpublishPost,
     publishPost,
-    createCategories
+    createCategories,
+    getAllCategories,
+    getSingleCategory
 }

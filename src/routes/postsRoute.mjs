@@ -4,7 +4,9 @@ const postsRoute = Router()
 
 
 postsRoute.post('/', postControllers.createPost)
-postsRoute.post('/category', postControllers.createCategories)
+postsRoute.post('/addcategory', postControllers.createCategories)
+postsRoute.get('/categories', postControllers.getAllCategories)
+postsRoute.get('/categories/:id', postControllers.getSingleCategory)
 
 postsRoute.get('/draft', postControllers.getDrafts)
 
