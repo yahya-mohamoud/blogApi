@@ -1,4 +1,4 @@
-import prisma from "../../prisma.mjs";
+import { prisma } from "../utils/prisma.js";
 
 const getAllComments = async (req, res) => {
     try {
@@ -44,7 +44,7 @@ const createComment = async (req, res) => {
             }
         });
 
-        res.status(201).json({message:"Commented successfully"});
+        res.status(201).json({ message: "Commented successfully" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
@@ -53,7 +53,7 @@ const createComment = async (req, res) => {
 
 const updateComment = async (req, res) => {
     const id = parseInt(req.params.id)
-    const {content} = req.body
+    const { content } = req.body
     try {
         const comment = await prisma.comment.update({
             where: { id },
@@ -61,9 +61,9 @@ const updateComment = async (req, res) => {
                 content
             }
         })
-        res.json({message: "Comment updated successfully"})
+        res.json({ message: "Comment updated successfully" })
     } catch (error) {
-        res.status(500).json({message: "couldn't find the comment"})
+        res.status(500).json({ message: "couldn't find the comment" })
     }
 }
 
@@ -72,22 +72,22 @@ const deleteComment = async (req, res) => {
         const commentId = parseInt(req.params.id)
         const authorId = parseInt(req.user.id)
         const comment = await prisma.comment.findFirst({
-             where: {id: commentId}
-            })
-        if(!comment) {
-            return res.status(404).json({message: "comment not found"})
+            where: { id: commentId }
+        })
+        if (!comment) {
+            return res.status(404).json({ message: "comment not found" })
         }
 
-        if(comment.authorId !== authorId) {
-            return res.status(403).json({message: "not allowed to delete this comment"})
+        if (comment.authorId !== authorId) {
+            return res.status(403).json({ message: "not allowed to delete this comment" })
         }
 
         const dlt = await prisma.comment.delete({
-            where: {id: commentId}
+            where: { id: commentId }
         })
-            res.json({messages: "Comment deleted successfully"})
+        res.json({ messages: "Comment deleted successfully" })
     } catch (error) {
-        
+
     }
 }
 

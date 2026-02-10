@@ -1,5 +1,5 @@
 import { Router } from "express";
-import prisma from "../../prisma.mjs";
+import { prisma } from "../utils/prisma.js";
 
 const userRoute = Router()
 
@@ -40,22 +40,22 @@ userRoute.delete("/:id", async (req, res) => {
     }
 })
 
-userRoute.patch("/:id", async(req, res) => {
+userRoute.patch("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
-    const {username, email} = req.body
+    const { username, email } = req.body
     try {
         const user = await prisma.user.update({
-            where: {id},
+            where: { id },
             data: {
                 email: email,
                 username: username
             }
         })
-        
+
         res.json(user)
-    } catch(error) {
-        res.status(500).json({message: `oops!! something went wrong ${error}`})
-    } 
+    } catch (error) {
+        res.status(500).json({ message: `oops!! something went wrong ${error}` })
+    }
 })
 
 

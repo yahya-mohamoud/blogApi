@@ -1,4 +1,4 @@
-import prisma from "../../prisma.mjs"
+import { prisma } from "../utils/prisma.js"
 
 const getAllPosts = async (req, res) => {
     const posts = await prisma.post.findMany({
@@ -27,7 +27,6 @@ const getPublishedPosts = async (req, res) => {
 
 const getSinglePost = async (req, res) => {
     const id = parseInt(req.params.id)
-    console.log(id)
     const post = await prisma.post.findFirst({
         where: { id },
         include: {
@@ -56,7 +55,7 @@ const createCategories = async (req, res) => {
         }
     })
 
-    res.json(data)
+    res.json({ data })
 }
 
 const getAllCategories = async (req, res) => {
@@ -70,7 +69,7 @@ const getAllCategories = async (req, res) => {
         }
     })
 
-    res.json(categories)
+    res.json({ categories })
 }
 
 const getSingleCategory = async (req, res) => {
@@ -87,8 +86,7 @@ const getSingleCategory = async (req, res) => {
             categories: true
         },
     })
-    console.log(category)
-    res.json(category)
+    res.json({ category })
 }
 
 const createPost = async (req, res) => {
@@ -104,7 +102,6 @@ const createPost = async (req, res) => {
             }
         })
 
-        console.log(categories)
         const post = await prisma.post.create({
             data: {
                 title,
@@ -125,7 +122,7 @@ const createPost = async (req, res) => {
             }
         });
 
-        res.json(post);
+        res.json({ post });
     } catch (error) {
         console.log(error);
         res.status(400).json({ error: "Cannot create post", details: error.message });
@@ -135,7 +132,6 @@ const createPost = async (req, res) => {
 
 const updatePost = async (req, res) => {
     const id = parseInt(req.params.id);
-    console.log(id)
     const { title, content, published, imageUrl } = req.body;
 
     try {
@@ -163,7 +159,6 @@ const deletePost = async (req, res) => {
                 comments: true
             }
         })
-        console.log(posts)
         res.json(posts)
     } catch (error) {
         res.status(404).json("error: post not found")

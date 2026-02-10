@@ -1,5 +1,4 @@
 import { Router } from "express";
-import prisma from "../../prisma.mjs";
 import commentsController from "../controllers/commentsController.mjs";
 
 const commentsRouter = Router()
